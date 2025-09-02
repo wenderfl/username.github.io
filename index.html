@@ -3,54 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fluxograma - Engenharia de Computação</title>
+    <title>Fluxograma Interativo - Engenharia de Computação (Corrigido)</title>
     <style>
-        /* Estilo base para travar a rolagem da página e centralizar o conteúdo */
         html, body {
             margin: 0;
             padding: 0;
             width: 100vw;
             height: 100vh;
-            overflow: hidden; /* CRÍTICO: Impede a rolagem da página inteira */
+            overflow: hidden;
             background-color: #f4f7f9;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center; /* Centraliza o wrapper verticalmente */
+            justify-content: center;
         }
-
         h1 {
             color: #2c3e50;
             text-align: center;
-            margin: 0 0 2vh 0; /* Espaçamento relativo à altura da tela */
-            font-size: 1.6rem; /* Tamanho fixo e adequado */
+            margin: 0 0 1.5vh 0;
+            font-size: 1.5rem;
             flex-shrink: 0;
         }
-
-        /* Contêiner que define a área visível do fluxograma */
         .fluxograma-wrapper {
-            width: 1330px; /* Largura total calculada para caber em 1366px */
-            height: 650px; /* Altura total calculada para caber em 768px */
+            width: 1340px;
+            height: 680px; /* Aumentei um pouco a altura para acomodar o layout correto */
             background-color: #fff;
             border-radius: 12px;
             box-shadow: 0 8px 25px rgba(0,0,0,0.1);
             padding: 15px;
             box-sizing: border-box;
-            display: flex; /* Usado para conter a grid */
+            display: flex;
             justify-content: center;
         }
-
-        /* A grade interna com dimensões fixas */
         .fluxograma-container {
             display: grid;
-            grid-template-columns: repeat(10, 110px); /* 10 colunas de 110px cada */
-            grid-auto-rows: 50px; /* Altura de linha reduzida */
-            gap: 12px 20px; /* Espaçamento vertical e horizontal reduzido */
+            grid-template-columns: repeat(10, 110px);
+            grid-template-rows: repeat(12, 46px); /* Mais linhas para posicionamento preciso */
+            gap: 8px 20px;
             position: relative;
             width: 100%;
         }
-        
         #arrow-canvas {
             position: absolute;
             top: 0;
@@ -60,18 +53,16 @@
             z-index: 1;
             pointer-events: none;
         }
-        
         .periodo-header {
-            grid-row: 1; /* Todos na primeira linha */
+            grid-row: 1;
             text-align: center;
             font-weight: bold;
             font-size: 1rem;
             color: #3498db;
             border-bottom: 2px solid #e0e0e0;
             padding-bottom: 8px;
-            z-index: 3; /* Garante que fique acima das setas */
+            z-index: 3;
         }
-
         .materia {
             border: 2px solid #bdc3c7;
             border-radius: 6px;
@@ -85,95 +76,100 @@
             cursor: pointer;
             user-select: none;
             transition: all 0.2s ease-in-out;
-            font-size: 11px; /* Fonte pequena e fixa para caber */
-            padding: 3px;
+            font-size: 10.5px;
+            padding: 2px;
             box-sizing: border-box;
-            line-height: 1.2;
+            line-height: 1.15;
         }
-
         .materia:hover {
             transform: scale(1.05);
             border-color: #3498db;
         }
-        .materia.aprovada {
-            background-color: #2ecc71;
-            color: white;
-            border-color: #27ae60;
-            font-weight: 500;
-        }
+        .materia.solicitada { background-color: #e74c3c; color: white; border-color: #c0392b; }
+        .materia.cursando { background-color: #f1c40f; color: #333; border-color: #f39c12; }
+        .materia.aprovada { background-color: #2ecc71; color: white; border-color: #27ae60; font-weight: 500; }
 
-        /* POSICIONAMENTO NA GRID (mesma lógica, apenas se encaixa no novo layout) */
-        #calc1 { grid-area: 2 / 1; }
-        #quimica { grid-area: 3 / 1; }
-        #algebra { grid-area: 4 / 1; }
-        #prog-func { grid-area: 6 / 1; }
-        #intro-ec { grid-area: 7 / 1; }
+        /* === POSICIONAMENTO FIEL AO FLUXOGRAMA ORIGINAL === */
+        /* P1 */
+        #calc1 { grid-area: 3 / 1; }
+        #quimica { grid-area: 5 / 1; }
+        #algebra { grid-area: 6 / 1; }
+        #prog-func { grid-area: 9 / 1; }
+        #intro-ec { grid-area: 11 / 1; }
 
+        /* P2 */
         #circuitos1 { grid-area: 2 / 2; }
-        #calc2 { grid-area: 3 / 2; }
-        #fund-mec { grid-area: 5 / 2; }
-        #prog-est { grid-area: 6 / 2; }
+        #calc2 { grid-area: 4 / 2; }
+        #fund-mec { grid-area: 7 / 2; }
+        #prog-est { grid-area: 9 / 2; }
 
+        /* P3 */
         #praticas-lab { grid-area: 2 / 3; }
         #circuitos2 { grid-area: 3 / 3; }
-        #calc3 { grid-area: 4 / 3; }
-        #eletromag1 { grid-area: 5 / 3; }
-        #fisica-exp { grid-area: 6 / 3; }
-        #est-basica { grid-area: 7 / 3; }
-        #ed1 { grid-area: 8 / 3; }
+        #calc3 { grid-area: 5 / 3; }
+        #eletromag1 { grid-area: 6 / 3; }
+        #fisica-exp { grid-area: 7 / 3; }
+        #est-basica { grid-area: 8 / 3; }
+        #ed1 { grid-area: 9 / 3; }
 
-        #eq-dif { grid-area: 3 / 4; }
-        #mec-solidos { grid-area: 4 / 4; }
-        #eletromag2 { grid-area: 5 / 4; }
-        #termo { grid-area: 6 / 4; }
-        #mec-fluidos { grid-area: 7 / 4; }
-        #ed2 { grid-area: 8 / 4; }
-        #arq-comp { grid-area: 9 / 4; }
+        /* P4 */
+        #eq-dif { grid-area: 4 / 4; }
+        #mec-solidos { grid-area: 5 / 4; }
+        #eletromag2 { grid-area: 6 / 4; }
+        #termo { grid-area: 8 / 4; }
+        #mec-fluidos { grid-area: 9 / 4; }
+        #ed2 { grid-area: 10 / 4; }
+        #arq-comp { grid-area: 11 / 4; }
 
-        #sinais { grid-area: 2 / 5; }
-        #ele-basica1 { grid-area: 3 / 5; }
-        #est-materia { grid-area: 4 / 5; }
-        #alg-num { grid-area: 5 / 5; }
-        #poo { grid-area: 8 / 5; }
+        /* P5 */
+        #sinais { grid-area: 3 / 5; }
+        #ele-basica1 { grid-area: 4 / 5; }
+        #est-materia { grid-area: 5 / 5; }
+        #alg-num { grid-area: 6 / 5; }
+        #poo { grid-area: 10 / 5; }
 
+        /* P6 */
         #instal-elet { grid-area: 2 / 6; }
         #analise-mod { grid-area: 3 / 6; }
         #ele-basica2 { grid-area: 4 / 6; }
         #ele-digital { grid-area: 5 / 6; }
-        #sis-op { grid-area: 8 / 6; }
-        #ling-prog { grid-area: 9 / 6; }
-        
+        #ling-prog { grid-area: 10 / 6; }
+        #sis-op { grid-area: 11 / 6; }
+        #eng-soft { grid-area: 12 / 6; }
+
+        /* P7 */
         #opt1 { grid-area: 2 / 7; }
         #sis-realim { grid-area: 3 / 7; }
         #lab-controle { grid-area: 4 / 7; }
         #sis-digitais { grid-area: 5 / 7; }
-        #proc-est { grid-area: 6 / 7; }
-        #comp-graf { grid-area: 7 / 7; }
-        #ling-formais { grid-area: 8 / 7; }
-        #eng-soft { grid-area: 9 / 7; }
-        #teleproc { grid-area: 10 / 7; }
+        #proc-est { grid-area: 7 / 7; }
+        #comp-graf { grid-area: 9 / 7; }
+        #ling-formais { grid-area: 10 / 7; }
+        #teleproc { grid-area: 12 / 7; }
 
+        /* P8 */
         #opt2 { grid-area: 2 / 8; }
         #economia { grid-area: 3 / 8; }
         #sis-embarcados { grid-area: 5 / 8; }
-        #banco-dados { grid-area: 7 / 8; }
-        #teoria-comp { grid-area: 8 / 8; }
-        #compiladores { grid-area: 9 / 8; }
-        #redes { grid-area: 10 / 8; }
+        #banco-dados { grid-area: 9 / 8; }
+        #teoria-comp { grid-area: 10 / 8; }
+        #compiladores { grid-area: 11 / 8; }
+        #redes { grid-area: 12 / 8; }
 
+        /* P9 */
         #opt3 { grid-area: 2 / 9; }
         #ciencias-hs { grid-area: 3 / 9; }
         #fund-amb { grid-area: 4 / 9; }
         #ger-proj { grid-area: 5 / 9; }
         #org-ind { grid-area: 6 / 9; }
         #asp-legais { grid-area: 7 / 9; }
-        #proj-grad1 { grid-area: 8 / 9; }
-        #aval-desemp { grid-area: 10 / 9; }
+        #proj-grad1 { grid-area: 9 / 9; }
+        #aval-desemp { grid-area: 12 / 9; }
 
+        /* P10 */
         #opt4 { grid-area: 2 / 10; }
         #estagio { grid-area: 3 / 10; }
-        #proj-grad2 { grid-area: 8 / 10; }
-
+        #proj-grad2 { grid-area: 9 / 10; }
     </style>
 </head>
 <body>
@@ -188,7 +184,7 @@
                 </defs>
             </svg>
 
-            <!-- Cabeçalhos dos Períodos na Linha 1 -->
+            <!-- Cabeçalhos dos Períodos -->
             <div class="periodo-header" style="grid-column: 1;">P1</div>
             <div class="periodo-header" style="grid-column: 2;">P2</div>
             <div class="periodo-header" style="grid-column: 3;">P3</div>
@@ -200,74 +196,81 @@
             <div class="periodo-header" style="grid-column: 9;">P9</div>
             <div class="periodo-header" style="grid-column: 10;">P10</div>
 
-            <!-- Matérias com IDs e data-requisitos -->
+            <!-- Matérias com data-requisitos corrigidos -->
             <div id="calc1" class="materia aprovada">Cálculo I</div>
             <div id="quimica" class="materia">Química</div>
             <div id="algebra" class="materia aprovada">Álgebra Linear</div>
             <div id="prog-func" class="materia aprovada">Programação Funcional</div>
             <div id="intro-ec" class="materia">Introdução à Eng. da Computação</div>
+            
             <div id="circuitos1" class="materia aprovada" data-requisitos="intro-ec">Circuitos Elétricos I</div>
             <div id="calc2" class="materia aprovada" data-requisitos="calc1">Cálculo II</div>
             <div id="fund-mec" class="materia aprovada" data-requisitos="calc1">Fundamentos de Mecânica Clássica</div>
-            <div id="prog-est" class="materia aprovada" data-requisitos="prog-func">Programação Estruturada</div>
-            <div id="praticas-lab" class="materia">Práticas de Laboratório</div>
-            <div id="circuitos2" class="materia" data-requisitos="circuitos1">Circuitos Elétricos II</div>
-            <div id="calc3" class="materia" data-requisitos="calc2">Cálculo III</div>
-            <div id="eletromag1" class="materia" data-requisitos="calc2,fund-mec">Eletromagnetismo I</div>
-            <div id="fisica-exp" class="materia" data-requisitos="fund-mec">Física Experimental</div>
+            <div id="prog-est" class="materia aprovada" data-requisitos="prog-func,intro-ec">Programação Estruturada</div>
+            
+            <div id="praticas-lab" class="materia solicitada">Práticas de Laboratório</div>
+            <div id="circuitos2" class="materia" data-requisitos="circuitos1,praticas-lab">Circuitos Elétricos II</div>
+            <div id="calc3" class="materia solicitada" data-requisitos="calc2">Cálculo III</div>
+            <div id="eletromag1" class="materia solicitada" data-requisitos="calc2,fund-mec">Eletromagnetismo I</div>
+            <div id="fisica-exp" class="materia solicitada" data-requisitos="fund-mec">Física Experimental</div>
             <div id="est-basica" class="materia aprovada">Estatística Básica</div>
             <div id="ed1" class="materia" data-requisitos="prog-est">Estrutura de dados I</div>
+            
             <div id="eq-dif" class="materia aprovada" data-requisitos="calc2">Equações Diferenciais</div>
-            <div id="mec-solidos" class="materia" data-requisitos="fund-mec">Mecânica dos sólidos</div>
+            <div id="mec-solidos" class="materia" data-requisitos="calc3">Mecânica dos sólidos</div>
             <div id="eletromag2" class="materia" data-requisitos="eletromag1">Eletromagnetismo II</div>
-            <div id="termo" class="materia aprovada" data-requisitos="fund-mec">Termodinâmica e Transmissão de Calor</div>
-            <div id="mec-fluidos" class="materia" data-requisitos="fund-mec">Mecânica de Fluidos</div>
+            <div id="termo" class="materia solicitada" data-requisitos="calc2">Termodinâmica e Transmissão de Calor</div>
+            <div id="mec-fluidos" class="materia" data-requisitos="termo">Mecânica de Fluidos</div>
             <div id="ed2" class="materia" data-requisitos="ed1">Estrutura de dados II</div>
-            <div id="arq-comp" class="materia" data-requisitos="ed1">Arquitetura de Computadores</div>
-            <div id="sinais" class="materia" data-requisitos="eq-dif,circuitos1">Sinais e Sistemas</div>
+            <div id="arq-comp" class="materia" data-requisitos="ed1,intro-ec">Arquitetura de Computadores</div>
+            
+            <div id="sinais" class="materia" data-requisitos="circuitos2,eq-dif">Sinais e Sistemas</div>
             <div id="ele-basica1" class="materia" data-requisitos="circuitos2">Eletrônica Básica I</div>
-            <div id="est-materia" class="materia" data-requisitos="quimica">Estrutura da Matéria</div>
+            <div id="est-materia" class="materia" data-requisitos="quimica,mec-solidos">Estrutura da Matéria</div>
             <div id="alg-num" class="materia" data-requisitos="calc2,prog-est">Algoritmos Numéricos</div>
             <div id="poo" class="materia aprovada" data-requisitos="ed1">Programação Orientada a Objetos</div>
+            
             <div id="instal-elet" class="materia" data-requisitos="circuitos2">Instalações Elétricas I</div>
             <div id="analise-mod" class="materia" data-requisitos="sinais">Análise e Modelagem de Sistemas Dinâmicos</div>
             <div id="ele-basica2" class="materia" data-requisitos="ele-basica1">Eletrônica Básica II</div>
             <div id="ele-digital" class="materia" data-requisitos="ele-basica1">Eletrônica Digital</div>
-            <div id="sis-op" class="materia" data-requisitos="arq-comp,poo">Sistemas Operacionais</div>
             <div id="ling-prog" class="materia" data-requisitos="poo">Linguagens de programação</div>
+            <div id="sis-op" class="materia" data-requisitos="arq-comp,poo">Sistemas Operacionais</div>
+            <div id="eng-soft" class="materia" data-requisitos="poo">Engenharia de Software</div>
+            
             <div id="opt1" class="materia">Optativa I</div>
             <div id="sis-realim" class="materia" data-requisitos="analise-mod">Sistemas Realimentados</div>
             <div id="lab-controle" class="materia" data-requisitos="sis-realim">Laboratório de Controle Automático</div>
             <div id="sis-digitais" class="materia" data-requisitos="ele-digital">Sistemas Digitais</div>
-            <div id="proc-est" class="materia" data-requisitos="est-basica,sinais">Processo Estocásticos</div>
-            <div id="comp-graf" class="materia" data-requisitos="algebra,poo">Computação Gráfica</div>
+            <div id="proc-est" class="materia" data-requisitos="est-basica,sinais">Processo Estocásticos aplicados à computação</div>
+            <div id="comp-graf" class="materia" data-requisitos="algebra,poo">Computação e Representação Gráfica</div>
             <div id="ling-formais" class="materia" data-requisitos="ed2">Linguagens Formais e Autômatos</div>
-            <div id="eng-soft" class="materia" data-requisitos="poo">Engenharia de Software</div>
-            <div id="teleproc" class="materia aprovada" data-requisitos="sinais">Teleprocessamento</div>
+            <div id="teleproc" class="materia aprovada" data-requisitos="ele-digital">Teleprocessamento</div>
+            
             <div id="opt2" class="materia">Optativa II</div>
             <div id="economia" class="materia">Economia da Engenharia</div>
             <div id="sis-embarcados" class="materia" data-requisitos="sis-digitais,arq-comp">Sistemas Embarcados</div>
-            <div id="banco-dados" class="materia" data-requisitos="ed2">Banco de Dados</div>
+            <div id="banco-dados" class="materia" data-requisitos="comp-graf">Banco de Dados</div>
             <div id="teoria-comp" class="materia" data-requisitos="ling-formais">Teoria da computação</div>
             <div id="compiladores" class="materia" data-requisitos="ling-formais,ling-prog">Compiladores</div>
-            <div id="redes" class="materia" data-requisitos="sis-op,teleproc">Redes de Computadores</div>
+            <div id="redes" class="materia" data-requisitos="teleproc,sis-op">Redes de Computadores</div>
+            
             <div id="opt3" class="materia">Optativa III</div>
             <div id="ciencias-hs" class="materia">Ciências Humanas e Sociais</div>
-            <div id="fund-amb" class="materia">Eng. Ambiental</div>
+            <div id="fund-amb" class="materia">Fundamento da Engenharia Ambiental</div>
             <div id="ger-proj" class="materia">Gerência de Projetos</div>
             <div id="org-ind" class="materia">Organização Industrial</div>
-            <div id="asp-legais" class="materia">Aspectos Legais</div>
+            <div id="asp-legais" class="materia">Aspectos Legais da Engenharia</div>
             <div id="proj-grad1" class="materia">Projeto de Graduação I</div>
-            <div id="aval-desemp" class="materia" data-requisitos="redes,proc-est">Avaliação de desempenho</div>
+            <div id="aval-desemp" class="materia" data-requisitos="redes,proc-est">Avaliação de desempenho de sistemas computacionais</div>
+            
             <div id="opt4" class="materia">Optativa IV</div>
-            <div id="estagio" class="materia">Estágio Supervisionado</div>
+            <div id="estagio" class="materia">Estagio Supervisionado</div>
             <div id="proj-grad2" class="materia" data-requisitos="proj-grad1">Projeto de Graduação II</div>
         </div>
     </div>
 
     <script>
-        // O JavaScript permanece o mesmo, pois ele se adapta dinamicamente
-        // à posição dos elementos definida pelo CSS.
         document.addEventListener('DOMContentLoaded', () => {
             const container = document.querySelector('.fluxograma-container');
             const svg = document.getElementById('arrow-canvas');
@@ -275,32 +278,24 @@
 
             function drawArrows() {
                 svg.innerHTML = svg.querySelector('defs').outerHTML;
-
                 materias.forEach(target => {
                     const prerequisitos = target.dataset.requisitos;
                     if (!prerequisitos) return;
-
                     const endX = target.offsetLeft;
                     const endY = target.offsetTop + target.offsetHeight / 2;
-
                     prerequisitos.split(',').forEach(prereqId => {
                         const source = document.getElementById(prereqId.trim());
                         if (!source) return;
-                        
                         const startX = source.offsetLeft + source.offsetWidth;
                         const startY = source.offsetTop + source.offsetHeight / 2;
-                        
                         const midX = startX + 10;
-                        
                         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
                         const d = `M ${startX},${startY} L ${midX},${startY} L ${midX},${endY} L ${endX},${endY}`;
-                        
                         path.setAttribute('d', d);
                         path.setAttribute('stroke', '#7f8c8d');
                         path.setAttribute('stroke-width', '1.5');
                         path.setAttribute('fill', 'none');
                         path.setAttribute('marker-end', 'url(#arrowhead)');
-                        
                         svg.appendChild(path);
                     });
                 });
@@ -308,14 +303,20 @@
 
             materias.forEach(materia => {
                 materia.addEventListener('click', () => {
-                    materia.classList.toggle('aprovada');
+                    const classes = materia.classList;
+                    if (classes.contains('aprovada')) {
+                        classes.remove('aprovada');
+                    } else if (classes.contains('cursando')) {
+                        classes.remove('cursando');
+                        classes.add('aprovada');
+                    } else {
+                        classes.remove('solicitada'); 
+                        classes.add('cursando');
+                    }
                 });
             });
             
-            // Desenhar as setas assim que o DOM estiver pronto
             drawArrows();
-
-            // Redesenhar caso a janela seja redimensionada (para garantir em casos extremos)
             window.addEventListener('resize', drawArrows);
         });
     </script>
