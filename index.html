@@ -1,324 +1,477 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fluxograma Interativo - Engenharia de Computação (Corrigido)</title>
-    <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
-            background-color: #f4f7f9;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        h1 {
-            color: #2c3e50;
-            text-align: center;
-            margin: 0 0 1.5vh 0;
-            font-size: 1.5rem;
-            flex-shrink: 0;
-        }
-        .fluxograma-wrapper {
-            width: 1340px;
-            height: 680px; /* Aumentei um pouco a altura para acomodar o layout correto */
-            background-color: #fff;
-            border-radius: 12px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-            padding: 15px;
-            box-sizing: border-box;
-            display: flex;
-            justify-content: center;
-        }
-        .fluxograma-container {
-            display: grid;
-            grid-template-columns: repeat(10, 110px);
-            grid-template-rows: repeat(12, 46px); /* Mais linhas para posicionamento preciso */
-            gap: 8px 20px;
-            position: relative;
-            width: 100%;
-        }
-        #arrow-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            pointer-events: none;
-        }
-        .periodo-header {
-            grid-row: 1;
-            text-align: center;
-            font-weight: bold;
-            font-size: 1rem;
-            color: #3498db;
-            border-bottom: 2px solid #e0e0e0;
-            padding-bottom: 8px;
-            z-index: 3;
-        }
-        .materia {
-            border: 2px solid #bdc3c7;
-            border-radius: 6px;
-            background-color: #f8f9fa;
-            position: relative;
-            z-index: 2;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            cursor: pointer;
-            user-select: none;
-            transition: all 0.2s ease-in-out;
-            font-size: 10.5px;
-            padding: 2px;
-            box-sizing: border-box;
-            line-height: 1.15;
-        }
-        .materia:hover {
-            transform: scale(1.05);
-            border-color: #3498db;
-        }
-        .materia.solicitada { background-color: #e74c3c; color: white; border-color: #c0392b; }
-        .materia.cursando { background-color: #f1c40f; color: #333; border-color: #f39c12; }
-        .materia.aprovada { background-color: #2ecc71; color: white; border-color: #27ae60; font-weight: 500; }
+From: <Saved by Blink>
+Snapshot-Content-Location: https://wenderfl.github.io/username.github.io/
+Subject: =?utf-8?Q?Fluxograma=20Interativo=20-=20Engenharia=20de=20Computa=C3=A7?=
+ =?utf-8?Q?=C3=A3o=20(Corrigido)?=
+Date: Wed, 10 Sep 2025 10:36:59 -0300
+MIME-Version: 1.0
+Content-Type: multipart/related;
+	type="text/html";
+	boundary="----MultipartBoundary--0s4drrtC86mDLZblD3tC1UYaQEW5O9YYTGO2pgrITr----"
 
-        /* === POSICIONAMENTO FIEL AO FLUXOGRAMA ORIGINAL === */
-        /* P1 */
-        #calc1 { grid-area: 3 / 1; }
-        #quimica { grid-area: 5 / 1; }
-        #algebra { grid-area: 6 / 1; }
-        #prog-func { grid-area: 9 / 1; }
-        #intro-ec { grid-area: 11 / 1; }
 
-        /* P2 */
-        #circuitos1 { grid-area: 2 / 2; }
-        #calc2 { grid-area: 4 / 2; }
-        #fund-mec { grid-area: 7 / 2; }
-        #prog-est { grid-area: 9 / 2; }
+------MultipartBoundary--0s4drrtC86mDLZblD3tC1UYaQEW5O9YYTGO2pgrITr----
+Content-Type: text/html
+Content-ID: <frame-00B84A0AB98E09A1A179BC1F0501FC77@mhtml.blink>
+Content-Transfer-Encoding: quoted-printable
+Content-Location: https://wenderfl.github.io/username.github.io/
 
-        /* P3 */
-        #praticas-lab { grid-area: 2 / 3; }
-        #circuitos2 { grid-area: 3 / 3; }
-        #calc3 { grid-area: 5 / 3; }
-        #eletromag1 { grid-area: 6 / 3; }
-        #fisica-exp { grid-area: 7 / 3; }
-        #est-basica { grid-area: 8 / 3; }
-        #ed1 { grid-area: 9 / 3; }
-
-        /* P4 */
-        #eq-dif { grid-area: 4 / 4; }
-        #mec-solidos { grid-area: 5 / 4; }
-        #eletromag2 { grid-area: 6 / 4; }
-        #termo { grid-area: 8 / 4; }
-        #mec-fluidos { grid-area: 9 / 4; }
-        #ed2 { grid-area: 10 / 4; }
-        #arq-comp { grid-area: 11 / 4; }
-
-        /* P5 */
-        #sinais { grid-area: 3 / 5; }
-        #ele-basica1 { grid-area: 4 / 5; }
-        #est-materia { grid-area: 5 / 5; }
-        #alg-num { grid-area: 6 / 5; }
-        #poo { grid-area: 10 / 5; }
-
-        /* P6 */
-        #instal-elet { grid-area: 2 / 6; }
-        #analise-mod { grid-area: 3 / 6; }
-        #ele-basica2 { grid-area: 4 / 6; }
-        #ele-digital { grid-area: 5 / 6; }
-        #ling-prog { grid-area: 10 / 6; }
-        #sis-op { grid-area: 11 / 6; }
-        #eng-soft { grid-area: 12 / 6; }
-
-        /* P7 */
-        #opt1 { grid-area: 2 / 7; }
-        #sis-realim { grid-area: 3 / 7; }
-        #lab-controle { grid-area: 4 / 7; }
-        #sis-digitais { grid-area: 5 / 7; }
-        #proc-est { grid-area: 7 / 7; }
-        #comp-graf { grid-area: 9 / 7; }
-        #ling-formais { grid-area: 10 / 7; }
-        #teleproc { grid-area: 12 / 7; }
-
-        /* P8 */
-        #opt2 { grid-area: 2 / 8; }
-        #economia { grid-area: 3 / 8; }
-        #sis-embarcados { grid-area: 5 / 8; }
-        #banco-dados { grid-area: 9 / 8; }
-        #teoria-comp { grid-area: 10 / 8; }
-        #compiladores { grid-area: 11 / 8; }
-        #redes { grid-area: 12 / 8; }
-
-        /* P9 */
-        #opt3 { grid-area: 2 / 9; }
-        #ciencias-hs { grid-area: 3 / 9; }
-        #fund-amb { grid-area: 4 / 9; }
-        #ger-proj { grid-area: 5 / 9; }
-        #org-ind { grid-area: 6 / 9; }
-        #asp-legais { grid-area: 7 / 9; }
-        #proj-grad1 { grid-area: 9 / 9; }
-        #aval-desemp { grid-area: 12 / 9; }
-
-        /* P10 */
-        #opt4 { grid-area: 2 / 10; }
-        #estagio { grid-area: 3 / 10; }
-        #proj-grad2 { grid-area: 9 / 10; }
-    </style>
+<!DOCTYPE html><html lang=3D"pt-br"><head><meta http-equiv=3D"Content-Type"=
+ content=3D"text/html; charset=3DUTF-8"><link rel=3D"stylesheet" type=3D"te=
+xt/css" href=3D"cid:css-2f377cb0-be99-4ba3-9493-48aeb5b05870@mhtml.blink" /=
+>
+   =20
+    <meta name=3D"viewport" content=3D"width=3Ddevice-width, initial-scale=
+=3D1.0">
+    <title>Fluxograma Interativo - Engenharia de Computa=C3=A7=C3=A3o (Corr=
+igido)</title>
+   =20
 </head>
-<body>
-    <h1>Fluxograma Interativo - Engenharia de Computação</h1>
-    <div class="fluxograma-wrapper">
-        <div class="fluxograma-container">
-            <svg id="arrow-canvas">
-                <defs>
-                    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
-                        <polygon points="0 0, 8 3, 0 6" fill="#555" />
+<body __processed_d0dd3e99-d048-473d-a38a-352b0ef4b42e__=3D"true">
+    <h1>Fluxograma Interativo - Engenharia de Computa=C3=A7=C3=A3o</h1>
+    <div class=3D"fluxograma-wrapper">
+        <div class=3D"fluxograma-container">
+            <svg id=3D"arrow-canvas"><defs>
+                    <marker id=3D"arrowhead" markerWidth=3D"8" markerHeight=
+=3D"6" refX=3D"8" refY=3D"3" orient=3D"auto">
+                        <polygon points=3D"0 0, 8 3, 0 6" fill=3D"#555"></p=
+olygon>
                     </marker>
-                </defs>
-            </svg>
+                </defs><path d=3D"M 110,563 L 120,563 L 120,77 L 130,77" st=
+roke=3D"#7f8c8d" stroke-width=3D"1.5" fill=3D"none" marker-end=3D"url(#arro=
+whead)"></path><path d=3D"M 110,131 L 120,131 L 120,185 L 130,185" stroke=
+=3D"#7f8c8d" stroke-width=3D"1.5" fill=3D"none" marker-end=3D"url(#arrowhea=
+d)"></path><path d=3D"M 110,131 L 120,131 L 120,347 L 130,347" stroke=3D"#7=
+f8c8d" stroke-width=3D"1.5" fill=3D"none" marker-end=3D"url(#arrowhead)"></=
+path><path d=3D"M 110,455 L 120,455 L 120,455 L 130,455" stroke=3D"#7f8c8d"=
+ stroke-width=3D"1.5" fill=3D"none" marker-end=3D"url(#arrowhead)"></path><=
+path d=3D"M 110,563 L 120,563 L 120,455 L 130,455" stroke=3D"#7f8c8d" strok=
+e-width=3D"1.5" fill=3D"none" marker-end=3D"url(#arrowhead)"></path><path d=
+=3D"M 240,77 L 250,77 L 250,131 L 260,131" stroke=3D"#7f8c8d" stroke-width=
+=3D"1.5" fill=3D"none" marker-end=3D"url(#arrowhead)"></path><path d=3D"M 3=
+70,77 L 380,77 L 380,131 L 260,131" stroke=3D"#7f8c8d" stroke-width=3D"1.5"=
+ fill=3D"none" marker-end=3D"url(#arrowhead)"></path><path d=3D"M 240,185 L=
+ 250,185 L 250,239 L 260,239" stroke=3D"#7f8c8d" stroke-width=3D"1.5" fill=
+=3D"none" marker-end=3D"url(#arrowhead)"></path><path d=3D"M 240,185 L 250,=
+185 L 250,293 L 260,293" stroke=3D"#7f8c8d" stroke-width=3D"1.5" fill=3D"no=
+ne" marker-end=3D"url(#arrowhead)"></path><path d=3D"M 240,347 L 250,347 L =
+250,293 L 260,293" stroke=3D"#7f8c8d" stroke-width=3D"1.5" fill=3D"none" ma=
+rker-end=3D"url(#arrowhead)"></path><path d=3D"M 240,347 L 250,347 L 250,34=
+7 L 260,347" stroke=3D"#7f8c8d" stroke-width=3D"1.5" fill=3D"none" marker-e=
+nd=3D"url(#arrowhead)"></path><path d=3D"M 240,455 L 250,455 L 250,455 L 26=
+0,455" stroke=3D"#7f8c8d" stroke-width=3D"1.5" fill=3D"none" marker-end=3D"=
+url(#arrowhead)"></path><path d=3D"M 240,185 L 250,185 L 250,185 L 390,185"=
+ stroke=3D"#7f8c8d" stroke-width=3D"1.5" fill=3D"none" marker-end=3D"url(#a=
+rrowhead)"></path><path d=3D"M 370,239 L 380,239 L 380,239 L 390,239" strok=
+e=3D"#7f8c8d" stroke-width=3D"1.5" fill=3D"none" marker-end=3D"url(#arrowhe=
+ad)"></path><path d=3D"M 370,293 L 380,293 L 380,293 L 390,293" stroke=3D"#=
+7f8c8d" stroke-width=3D"1.5" fill=3D"none" marker-end=3D"url(#arrowhead)"><=
+/path><path d=3D"M 240,185 L 250,185 L 250,401 L 390,401" stroke=3D"#7f8c8d=
+" stroke-width=3D"1.5" fill=3D"none" marker-end=3D"url(#arrowhead)"></path>=
+<path d=3D"M 500,401 L 510,401 L 510,455 L 390,455" stroke=3D"#7f8c8d" stro=
+ke-width=3D"1.5" fill=3D"none" marker-end=3D"url(#arrowhead)"></path><path =
+d=3D"M 370,455 L 380,455 L 380,509 L 390,509" stroke=3D"#7f8c8d" stroke-wid=
+th=3D"1.5" fill=3D"none" marker-end=3D"url(#arrowhead)"></path><path d=3D"M=
+ 370,455 L 380,455 L 380,563 L 390,563" stroke=3D"#7f8c8d" stroke-width=3D"=
+1.5" fill=3D"none" marker-end=3D"url(#arrowhead)"></path><path d=3D"M 110,5=
+63 L 120,563 L 120,563 L 390,563" stroke=3D"#7f8c8d" stroke-width=3D"1.5" f=
+ill=3D"none" marker-end=3D"url(#arrowhead)"></path><path d=3D"M 370,131 L 3=
+80,131 L 380,131 L 520,131" stroke=3D"#7f8c8d" stroke-width=3D"1.5" fill=3D=
+"none" marker-end=3D"url(#arrowhead)"></path><path d=3D"M 500,185 L 510,185=
+ L 510,131 L 520,131" stroke=3D"#7f8c8d" stroke-width=3D"1.5" fill=3D"none"=
+ marker-end=3D"url(#arrowhead)"></path><path d=3D"M 370,131 L 380,131 L 380=
+,185 L 520,185" stroke=3D"#7f8c8d" stroke-width=3D"1.5" fill=3D"none" marke=
+r-end=3D"url(#arrowhead)"></path><path d=3D"M 110,239 L 120,239 L 120,239 L=
+ 520,239" stroke=3D"#7f8c8d" stroke-width=3D"1.5" fill=3D"none" marker-end=
+=3D"url(#arrowhead)"></path><path d=3D"M 500,239 L 510,239 L 510,239 L 520,=
+239" stroke=3D"#7f8c8d" stroke-width=3D"1.5" fill=3D"none" marker-end=3D"ur=
+l(#arrowhead)"></path><path d=3D"M 240,185 L 250,185 L 250,293 L 520,293" s=
+troke=3D"#7f8c8d" stroke-width=3D"1.5" fill=3D"none" marker-end=3D"url(#arr=
+owhead)"></path><path d=3D"M 240,455 L 250,455 L 250,293 L 520,293" stroke=
+=3D"#7f8c8d" stroke-width=3D"1.5" fill=3D"none" marker-end=3D"url(#arrowhea=
+d)"></path><path d=3D"M 370,455 L 380,455 L 380,509 L 520,509" stroke=3D"#7=
+f8c8d" stroke-width=3D"1.5" fill=3D"none" marker-end=3D"url(#arrowhead)"></=
+path><path d=3D"M 370,131 L 380,131 L 380,77 L 650,77" stroke=3D"#7f8c8d" s=
+troke-width=3D"1.5" fill=3D"none" marker-end=3D"url(#arrowhead)"></path><pa=
+th d=3D"M 630,131 L 640,131 L 640,131 L 650,131" stroke=3D"#7f8c8d" stroke-=
+width=3D"1.5" fill=3D"none" marker-end=3D"url(#arrowhead)"></path><path d=
+=3D"M 630,185 L 640,185 L 640,185 L 650,185" stroke=3D"#7f8c8d" stroke-widt=
+h=3D"1.5" fill=3D"none" marker-end=3D"url(#arrowhead)"></path><path d=3D"M =
+630,185 L 640,185 L 640,239 L 650,239" stroke=3D"#7f8c8d" stroke-width=3D"1=
+.5" fill=3D"none" marker-end=3D"url(#arrowhead)"></path><path d=3D"M 630,50=
+9 L 640,509 L 640,509 L 650,509" stroke=3D"#7f8c8d" stroke-width=3D"1.5" fi=
+ll=3D"none" marker-end=3D"url(#arrowhead)"></path><path d=3D"M 500,563 L 51=
+0,563 L 510,563 L 650,563" stroke=3D"#7f8c8d" stroke-width=3D"1.5" fill=3D"=
+none" marker-end=3D"url(#arrowhead)"></path><path d=3D"M 630,509 L 640,509 =
+L 640,563 L 650,563" stroke=3D"#7f8c8d" stroke-width=3D"1.5" fill=3D"none" =
+marker-end=3D"url(#arrowhead)"></path><path d=3D"M 630,509 L 640,509 L 640,=
+617 L 650,617" stroke=3D"#7f8c8d" stroke-width=3D"1.5" fill=3D"none" marker=
+-end=3D"url(#arrowhead)"></path><path d=3D"M 760,131 L 770,131 L 770,131 L =
+780,131" stroke=3D"#7f8c8d" stroke-width=3D"1.5" fill=3D"none" marker-end=
+=3D"url(#arrowhead)"></path><path d=3D"M 890,131 L 900,131 L 900,185 L 780,=
+185" stroke=3D"#7f8c8d" stroke-width=3D"1.5" fill=3D"none" marker-end=3D"ur=
+l(#arrowhead)"></path><path d=3D"M 760,239 L 770,239 L 770,239 L 780,239" s=
+troke=3D"#7f8c8d" stroke-width=3D"1.5" fill=3D"none" marker-end=3D"url(#arr=
+owhead)"></path><path d=3D"M 370,401 L 380,401 L 380,347 L 780,347" stroke=
+=3D"#7f8c8d" stroke-width=3D"1.5" fill=3D"none" marker-end=3D"url(#arrowhea=
+d)"></path><path d=3D"M 630,131 L 640,131 L 640,347 L 780,347" stroke=3D"#7=
+f8c8d" stroke-width=3D"1.5" fill=3D"none" marker-end=3D"url(#arrowhead)"></=
+path><path d=3D"M 110,293 L 120,293 L 120,455 L 780,455" stroke=3D"#7f8c8d"=
+ stroke-width=3D"1.5" fill=3D"none" marker-end=3D"url(#arrowhead)"></path><=
+path d=3D"M 630,509 L 640,509 L 640,455 L 780,455" stroke=3D"#7f8c8d" strok=
+e-width=3D"1.5" fill=3D"none" marker-end=3D"url(#arrowhead)"></path><path d=
+=3D"M 500,509 L 510,509 L 510,509 L 780,509" stroke=3D"#7f8c8d" stroke-widt=
+h=3D"1.5" fill=3D"none" marker-end=3D"url(#arrowhead)"></path><path d=3D"M =
+760,239 L 770,239 L 770,617 L 780,617" stroke=3D"#7f8c8d" stroke-width=3D"1=
+.5" fill=3D"none" marker-end=3D"url(#arrowhead)"></path><path d=3D"M 890,23=
+9 L 900,239 L 900,239 L 910,239" stroke=3D"#7f8c8d" stroke-width=3D"1.5" fi=
+ll=3D"none" marker-end=3D"url(#arrowhead)"></path><path d=3D"M 500,563 L 51=
+0,563 L 510,239 L 910,239" stroke=3D"#7f8c8d" stroke-width=3D"1.5" fill=3D"=
+none" marker-end=3D"url(#arrowhead)"></path><path d=3D"M 890,455 L 900,455 =
+L 900,455 L 910,455" stroke=3D"#7f8c8d" stroke-width=3D"1.5" fill=3D"none" =
+marker-end=3D"url(#arrowhead)"></path><path d=3D"M 890,509 L 900,509 L 900,=
+509 L 910,509" stroke=3D"#7f8c8d" stroke-width=3D"1.5" fill=3D"none" marker=
+-end=3D"url(#arrowhead)"></path><path d=3D"M 890,509 L 900,509 L 900,563 L =
+910,563" stroke=3D"#7f8c8d" stroke-width=3D"1.5" fill=3D"none" marker-end=
+=3D"url(#arrowhead)"></path><path d=3D"M 760,509 L 770,509 L 770,563 L 910,=
+563" stroke=3D"#7f8c8d" stroke-width=3D"1.5" fill=3D"none" marker-end=3D"ur=
+l(#arrowhead)"></path><path d=3D"M 890,617 L 900,617 L 900,617 L 910,617" s=
+troke=3D"#7f8c8d" stroke-width=3D"1.5" fill=3D"none" marker-end=3D"url(#arr=
+owhead)"></path><path d=3D"M 760,563 L 770,563 L 770,617 L 910,617" stroke=
+=3D"#7f8c8d" stroke-width=3D"1.5" fill=3D"none" marker-end=3D"url(#arrowhea=
+d)"></path><path d=3D"M 1020,617 L 1030,617 L 1030,617 L 1040,617" stroke=
+=3D"#7f8c8d" stroke-width=3D"1.5" fill=3D"none" marker-end=3D"url(#arrowhea=
+d)"></path><path d=3D"M 890,347 L 900,347 L 900,617 L 1040,617" stroke=3D"#=
+7f8c8d" stroke-width=3D"1.5" fill=3D"none" marker-end=3D"url(#arrowhead)"><=
+/path><path d=3D"M 1150,455 L 1160,455 L 1160,455 L 1170,455" stroke=3D"#7f=
+8c8d" stroke-width=3D"1.5" fill=3D"none" marker-end=3D"url(#arrowhead)"></p=
+ath></svg>
 
-            <!-- Cabeçalhos dos Períodos -->
-            <div class="periodo-header" style="grid-column: 1;">P1</div>
-            <div class="periodo-header" style="grid-column: 2;">P2</div>
-            <div class="periodo-header" style="grid-column: 3;">P3</div>
-            <div class="periodo-header" style="grid-column: 4;">P4</div>
-            <div class="periodo-header" style="grid-column: 5;">P5</div>
-            <div class="periodo-header" style="grid-column: 6;">P6</div>
-            <div class="periodo-header" style="grid-column: 7;">P7</div>
-            <div class="periodo-header" style="grid-column: 8;">P8</div>
-            <div class="periodo-header" style="grid-column: 9;">P9</div>
-            <div class="periodo-header" style="grid-column: 10;">P10</div>
+            <!-- Cabe=C3=A7alhos dos Per=C3=ADodos -->
+            <div class=3D"periodo-header" style=3D"grid-column: 1;">P1</div=
+>
+            <div class=3D"periodo-header" style=3D"grid-column: 2;">P2</div=
+>
+            <div class=3D"periodo-header" style=3D"grid-column: 3;">P3</div=
+>
+            <div class=3D"periodo-header" style=3D"grid-column: 4;">P4</div=
+>
+            <div class=3D"periodo-header" style=3D"grid-column: 5;">P5</div=
+>
+            <div class=3D"periodo-header" style=3D"grid-column: 6;">P6</div=
+>
+            <div class=3D"periodo-header" style=3D"grid-column: 7;">P7</div=
+>
+            <div class=3D"periodo-header" style=3D"grid-column: 8;">P8</div=
+>
+            <div class=3D"periodo-header" style=3D"grid-column: 9;">P9</div=
+>
+            <div class=3D"periodo-header" style=3D"grid-column: 10;">P10</d=
+iv>
 
-            <!-- Matérias com data-requisitos corrigidos -->
-            <div id="calc1" class="materia aprovada">Cálculo I</div>
-            <div id="quimica" class="materia">Química</div>
-            <div id="algebra" class="materia aprovada">Álgebra Linear</div>
-            <div id="prog-func" class="materia aprovada">Programação Funcional</div>
-            <div id="intro-ec" class="materia">Introdução à Eng. da Computação</div>
-            
-            <div id="circuitos1" class="materia aprovada" data-requisitos="intro-ec">Circuitos Elétricos I</div>
-            <div id="calc2" class="materia aprovada" data-requisitos="calc1">Cálculo II</div>
-            <div id="fund-mec" class="materia aprovada" data-requisitos="calc1">Fundamentos de Mecânica Clássica</div>
-            <div id="prog-est" class="materia aprovada" data-requisitos="prog-func,intro-ec">Programação Estruturada</div>
-            
-            <div id="praticas-lab" class="materia aprovada">Práticas de Laboratório</div>
-            <div id="circuitos2" class="materia" data-requisitos="circuitos1,praticas-lab">Circuitos Elétricos II</div>
-            <div id="calc3" class="materia aprovada" data-requisitos="calc2">Cálculo III</div>
-            <div id="eletromag1" class="materia aprovada" data-requisitos="calc2,fund-mec">Eletromagnetismo I</div>
-            <div id="fisica-exp" class="materia" data-requisitos="fund-mec">Física Experimental</div>
-            <div id="est-basica" class="materia aprovada">Estatística Básica</div>
-            <div id="ed1" class="materia solicitada" data-requisitos="prog-est">Estrutura de dados I</div>
-            
-            <div id="eq-dif" class="materia aprovada" data-requisitos="calc2">Equações Diferenciais</div>
-            <div id="mec-solidos" class="materia" data-requisitos="calc3">Mecânica dos sólidos</div>
-            <div id="eletromag2" class="materia" data-requisitos="eletromag1">Eletromagnetismo II</div>
-            <div id="termo" class="materia aprovada" data-requisitos="calc2">Termodinâmica e Transmissão de Calor</div>
-            <div id="mec-fluidos" class="materia" data-requisitos="termo">Mecânica de Fluidos</div>
-            <div id="ed2" class="materia" data-requisitos="ed1">Estrutura de dados II</div>
-            <div id="arq-comp" class="materia" data-requisitos="ed1,intro-ec">Arquitetura de Computadores</div>
-            
-            <div id="sinais" class="materia" data-requisitos="circuitos2,eq-dif">Sinais e Sistemas</div>
-            <div id="ele-basica1" class="materia" data-requisitos="circuitos2">Eletrônica Básica I</div>
-            <div id="est-materia" class="materia" data-requisitos="quimica,mec-solidos">Estrutura da Matéria</div>
-            <div id="alg-num" class="materia" data-requisitos="calc2,prog-est">Algoritmos Numéricos</div>
-            <div id="poo" class="materia aprovada" data-requisitos="ed1">Programação Orientada a Objetos</div>
-            
-            <div id="instal-elet" class="materia" data-requisitos="circuitos2">Instalações Elétricas I</div>
-            <div id="analise-mod" class="materia" data-requisitos="sinais">Análise e Modelagem de Sistemas Dinâmicos</div>
-            <div id="ele-basica2" class="materia" data-requisitos="ele-basica1">Eletrônica Básica II</div>
-            <div id="ele-digital" class="materia" data-requisitos="ele-basica1">Eletrônica Digital</div>
-            <div id="ling-prog" class="materia" data-requisitos="poo">Linguagens de programação</div>
-            <div id="sis-op" class="materia" data-requisitos="arq-comp,poo">Sistemas Operacionais</div>
-            <div id="eng-soft" class="materia" data-requisitos="poo">Engenharia de Software</div>
-            
-            <div id="opt1" class="materia">Optativa I</div>
-            <div id="sis-realim" class="materia" data-requisitos="analise-mod">Sistemas Realimentados</div>
-            <div id="lab-controle" class="materia" data-requisitos="sis-realim">Laboratório de Controle Automático</div>
-            <div id="sis-digitais" class="materia" data-requisitos="ele-digital">Sistemas Digitais</div>
-            <div id="proc-est" class="materia" data-requisitos="est-basica,sinais">Processo Estocásticos aplicados à computação</div>
-            <div id="comp-graf" class="materia" data-requisitos="algebra,poo">Computação e Representação Gráfica</div>
-            <div id="ling-formais" class="materia" data-requisitos="ed2">Linguagens Formais e Autômatos</div>
-            <div id="teleproc" class="materia aprovada" data-requisitos="ele-digital">Teleprocessamento</div>
-            
-            <div id="opt2" class="materia">Optativa II</div>
-            <div id="economia" class="materia">Economia da Engenharia</div>
-            <div id="sis-embarcados" class="materia" data-requisitos="sis-digitais,arq-comp">Sistemas Embarcados</div>
-            <div id="banco-dados" class="materia" data-requisitos="comp-graf">Banco de Dados</div>
-            <div id="teoria-comp" class="materia" data-requisitos="ling-formais">Teoria da computação</div>
-            <div id="compiladores" class="materia" data-requisitos="ling-formais,ling-prog">Compiladores</div>
-            <div id="redes" class="materia" data-requisitos="teleproc,sis-op">Redes de Computadores</div>
-            
-            <div id="opt3" class="materia">Optativa III</div>
-            <div id="ciencias-hs" class="materia">Ciências Humanas e Sociais</div>
-            <div id="fund-amb" class="materia">Fundamento da Engenharia Ambiental</div>
-            <div id="ger-proj" class="materia">Gerência de Projetos</div>
-            <div id="org-ind" class="materia">Organização Industrial</div>
-            <div id="asp-legais" class="materia">Aspectos Legais da Engenharia</div>
-            <div id="proj-grad1" class="materia">Projeto de Graduação I</div>
-            <div id="aval-desemp" class="materia" data-requisitos="redes,proc-est">Avaliação de desempenho de sistemas computacionais</div>
-            
-            <div id="opt4" class="materia">Optativa IV</div>
-            <div id="estagio" class="materia">Estagio Supervisionado</div>
-            <div id="proj-grad2" class="materia" data-requisitos="proj-grad1">Projeto de Graduação II</div>
+            <!-- Mat=C3=A9rias com data-requisitos corrigidos -->
+            <div id=3D"calc1" class=3D"materia aprovada">C=C3=A1lculo I</di=
+v>
+            <div id=3D"quimica" class=3D"materia">Qu=C3=ADmica</div>
+            <div id=3D"algebra" class=3D"materia aprovada">=C3=81lgebra Lin=
+ear</div>
+            <div id=3D"prog-func" class=3D"materia aprovada">Programa=C3=A7=
+=C3=A3o Funcional</div>
+            <div id=3D"intro-ec" class=3D"materia">Introdu=C3=A7=C3=A3o =C3=
+=A0 Eng. da Computa=C3=A7=C3=A3o</div>
+           =20
+            <div id=3D"circuitos1" class=3D"materia aprovada" data-requisit=
+os=3D"intro-ec">Circuitos El=C3=A9tricos I</div>
+            <div id=3D"calc2" class=3D"materia aprovada" data-requisitos=3D=
+"calc1">C=C3=A1lculo II</div>
+            <div id=3D"fund-mec" class=3D"materia aprovada" data-requisitos=
+=3D"calc1">Fundamentos de Mec=C3=A2nica Cl=C3=A1ssica</div>
+            <div id=3D"prog-est" class=3D"materia aprovada" data-requisitos=
+=3D"prog-func,intro-ec">Programa=C3=A7=C3=A3o Estruturada</div>
+           =20
+            <div id=3D"praticas-lab" class=3D"materia aprovada">Pr=C3=A1tic=
+as de Laborat=C3=B3rio</div>
+            <div id=3D"circuitos2" class=3D"materia" data-requisitos=3D"cir=
+cuitos1,praticas-lab">Circuitos El=C3=A9tricos II</div>
+            <div id=3D"calc3" class=3D"materia aprovada" data-requisitos=3D=
+"calc2">C=C3=A1lculo III</div>
+            <div id=3D"eletromag1" class=3D"materia aprovada" data-requisit=
+os=3D"calc2,fund-mec">Eletromagnetismo I</div>
+            <div id=3D"fisica-exp" class=3D"materia" data-requisitos=3D"fun=
+d-mec">F=C3=ADsica Experimental</div>
+            <div id=3D"est-basica" class=3D"materia aprovada">Estat=C3=ADst=
+ica B=C3=A1sica</div>
+            <div id=3D"ed1" class=3D"materia cursando" data-requisitos=3D"p=
+rog-est">Estrutura de dados I</div>
+           =20
+            <div id=3D"eq-dif" class=3D"materia aprovada" data-requisitos=
+=3D"calc2">Equa=C3=A7=C3=B5es Diferenciais</div>
+            <div id=3D"mec-solidos" class=3D"materia" data-requisitos=3D"ca=
+lc3">Mec=C3=A2nica dos s=C3=B3lidos</div>
+            <div id=3D"eletromag2" class=3D"materia" data-requisitos=3D"ele=
+tromag1">Eletromagnetismo II</div>
+            <div id=3D"termo" class=3D"materia aprovada" data-requisitos=3D=
+"calc2">Termodin=C3=A2mica e Transmiss=C3=A3o de Calor</div>
+            <div id=3D"mec-fluidos" class=3D"materia" data-requisitos=3D"te=
+rmo">Mec=C3=A2nica de Fluidos</div>
+            <div id=3D"ed2" class=3D"materia" data-requisitos=3D"ed1">Estru=
+tura de dados II</div>
+            <div id=3D"arq-comp" class=3D"materia" data-requisitos=3D"ed1,i=
+ntro-ec">Arquitetura de Computadores</div>
+           =20
+            <div id=3D"sinais" class=3D"materia" data-requisitos=3D"circuit=
+os2,eq-dif">Sinais e Sistemas</div>
+            <div id=3D"ele-basica1" class=3D"materia" data-requisitos=3D"ci=
+rcuitos2">Eletr=C3=B4nica B=C3=A1sica I</div>
+            <div id=3D"est-materia" class=3D"materia" data-requisitos=3D"qu=
+imica,mec-solidos">Estrutura da Mat=C3=A9ria</div>
+            <div id=3D"alg-num" class=3D"materia" data-requisitos=3D"calc2,=
+prog-est">Algoritmos Num=C3=A9ricos</div>
+            <div id=3D"poo" class=3D"materia aprovada" data-requisitos=3D"e=
+d1">Programa=C3=A7=C3=A3o Orientada a Objetos</div>
+           =20
+            <div id=3D"instal-elet" class=3D"materia" data-requisitos=3D"ci=
+rcuitos2">Instala=C3=A7=C3=B5es El=C3=A9tricas I</div>
+            <div id=3D"analise-mod" class=3D"materia" data-requisitos=3D"si=
+nais">An=C3=A1lise e Modelagem de Sistemas Din=C3=A2micos</div>
+            <div id=3D"ele-basica2" class=3D"materia" data-requisitos=3D"el=
+e-basica1">Eletr=C3=B4nica B=C3=A1sica II</div>
+            <div id=3D"ele-digital" class=3D"materia" data-requisitos=3D"el=
+e-basica1">Eletr=C3=B4nica Digital</div>
+            <div id=3D"ling-prog" class=3D"materia cursando" data-requisito=
+s=3D"poo">Linguagens de programa=C3=A7=C3=A3o</div>
+            <div id=3D"sis-op" class=3D"materia" data-requisitos=3D"arq-com=
+p,poo">Sistemas Operacionais</div>
+            <div id=3D"eng-soft" class=3D"materia cursando" data-requisitos=
+=3D"poo">Engenharia de Software</div>
+           =20
+            <div id=3D"opt1" class=3D"materia">Optativa I</div>
+            <div id=3D"sis-realim" class=3D"materia" data-requisitos=3D"ana=
+lise-mod">Sistemas Realimentados</div>
+            <div id=3D"lab-controle" class=3D"materia" data-requisitos=3D"s=
+is-realim">Laborat=C3=B3rio de Controle Autom=C3=A1tico</div>
+            <div id=3D"sis-digitais" class=3D"materia" data-requisitos=3D"e=
+le-digital">Sistemas Digitais</div>
+            <div id=3D"proc-est" class=3D"materia" data-requisitos=3D"est-b=
+asica,sinais">Processo Estoc=C3=A1sticos aplicados =C3=A0 computa=C3=A7=C3=
+=A3o</div>
+            <div id=3D"comp-graf" class=3D"materia" data-requisitos=3D"alge=
+bra,poo">Computa=C3=A7=C3=A3o e Representa=C3=A7=C3=A3o Gr=C3=A1fica</div>
+            <div id=3D"ling-formais" class=3D"materia" data-requisitos=3D"e=
+d2">Linguagens Formais e Aut=C3=B4matos</div>
+            <div id=3D"teleproc" class=3D"materia aprovada" data-requisitos=
+=3D"ele-digital">Teleprocessamento</div>
+           =20
+            <div id=3D"opt2" class=3D"materia">Optativa II</div>
+            <div id=3D"economia" class=3D"materia cursando">Economia da Eng=
+enharia</div>
+            <div id=3D"sis-embarcados" class=3D"materia" data-requisitos=3D=
+"sis-digitais,arq-comp">Sistemas Embarcados</div>
+            <div id=3D"banco-dados" class=3D"materia" data-requisitos=3D"co=
+mp-graf">Banco de Dados</div>
+            <div id=3D"teoria-comp" class=3D"materia" data-requisitos=3D"li=
+ng-formais">Teoria da computa=C3=A7=C3=A3o</div>
+            <div id=3D"compiladores" class=3D"materia" data-requisitos=3D"l=
+ing-formais,ling-prog">Compiladores</div>
+            <div id=3D"redes" class=3D"materia" data-requisitos=3D"teleproc=
+,sis-op">Redes de Computadores</div>
+           =20
+            <div id=3D"opt3" class=3D"materia">Optativa III</div>
+            <div id=3D"ciencias-hs" class=3D"materia cursando">Ci=C3=AAncia=
+s Humanas e Sociais</div>
+            <div id=3D"fund-amb" class=3D"materia">Fundamento da Engenharia=
+ Ambiental</div>
+            <div id=3D"ger-proj" class=3D"materia">Ger=C3=AAncia de Projeto=
+s</div>
+            <div id=3D"org-ind" class=3D"materia">Organiza=C3=A7=C3=A3o Ind=
+ustrial</div>
+            <div id=3D"asp-legais" class=3D"materia">Aspectos Legais da Eng=
+enharia</div>
+            <div id=3D"proj-grad1" class=3D"materia">Projeto de Gradua=C3=
+=A7=C3=A3o I</div>
+            <div id=3D"aval-desemp" class=3D"materia" data-requisitos=3D"re=
+des,proc-est">Avalia=C3=A7=C3=A3o de desempenho de sistemas computacionais<=
+/div>
+           =20
+            <div id=3D"opt4" class=3D"materia">Optativa IV</div>
+            <div id=3D"estagio" class=3D"materia">Estagio Supervisionado</d=
+iv>
+            <div id=3D"proj-grad2" class=3D"materia" data-requisitos=3D"pro=
+j-grad1">Projeto de Gradua=C3=A7=C3=A3o II</div>
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const container = document.querySelector('.fluxograma-container');
-            const svg = document.getElementById('arrow-canvas');
-            const materias = document.querySelectorAll('.materia');
+   =20
 
-            function drawArrows() {
-                svg.innerHTML = svg.querySelector('defs').outerHTML;
-                materias.forEach(target => {
-                    const prerequisitos = target.dataset.requisitos;
-                    if (!prerequisitos) return;
-                    const endX = target.offsetLeft;
-                    const endY = target.offsetTop + target.offsetHeight / 2;
-                    prerequisitos.split(',').forEach(prereqId => {
-                        const source = document.getElementById(prereqId.trim());
-                        if (!source) return;
-                        const startX = source.offsetLeft + source.offsetWidth;
-                        const startY = source.offsetTop + source.offsetHeight / 2;
-                        const midX = startX + 10;
-                        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                        const d = `M ${startX},${startY} L ${midX},${startY} L ${midX},${endY} L ${endX},${endY}`;
-                        path.setAttribute('d', d);
-                        path.setAttribute('stroke', '#7f8c8d');
-                        path.setAttribute('stroke-width', '1.5');
-                        path.setAttribute('fill', 'none');
-                        path.setAttribute('marker-end', 'url(#arrowhead)');
-                        svg.appendChild(path);
-                    });
-                });
-            }
 
-            materias.forEach(materia => {
-                materia.addEventListener('click', () => {
-                    const classes = materia.classList;
-                    if (classes.contains('aprovada')) {
-                        classes.remove('aprovada');
-                    } else if (classes.contains('cursando')) {
-                        classes.remove('cursando');
-                        classes.add('aprovada');
-                    } else {
-                        classes.remove('solicitada'); 
-                        classes.add('cursando');
-                    }
-                });
-            });
-            
-            drawArrows();
-            window.addEventListener('resize', drawArrows);
-        });
-    </script>
-</body>
-</html>
+</body></html>
+------MultipartBoundary--0s4drrtC86mDLZblD3tC1UYaQEW5O9YYTGO2pgrITr----
+Content-Type: text/css
+Content-Transfer-Encoding: quoted-printable
+Content-Location: cid:css-2f377cb0-be99-4ba3-9493-48aeb5b05870@mhtml.blink
+
+@charset "utf-8";
+
+html, body { margin: 0px; padding: 0px; width: 100vw; height: 100vh; overfl=
+ow: hidden; background-color: rgb(244, 247, 249); font-family: -apple-syste=
+m, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif; di=
+splay: flex; flex-direction: column; align-items: center; justify-content: =
+center; }
+
+h1 { color: rgb(44, 62, 80); text-align: center; margin: 0px 0px 1.5vh; fon=
+t-size: 1.5rem; flex-shrink: 0; }
+
+.fluxograma-wrapper { width: 1340px; height: 680px; background-color: rgb(2=
+55, 255, 255); border-radius: 12px; box-shadow: rgba(0, 0, 0, 0.1) 0px 8px =
+25px; padding: 15px; box-sizing: border-box; display: flex; justify-content=
+: center; }
+
+.fluxograma-container { display: grid; grid-template-columns: repeat(10, 11=
+0px); grid-template-rows: repeat(12, 46px); gap: 8px 20px; position: relati=
+ve; width: 100%; }
+
+#arrow-canvas { position: absolute; top: 0px; left: 0px; width: 100%; heigh=
+t: 100%; z-index: 1; pointer-events: none; }
+
+.periodo-header { grid-row: 1; text-align: center; font-weight: bold; font-=
+size: 1rem; color: rgb(52, 152, 219); border-bottom: 2px solid rgb(224, 224=
+, 224); padding-bottom: 8px; z-index: 3; }
+
+.materia { border: 2px solid rgb(189, 195, 199); border-radius: 6px; backgr=
+ound-color: rgb(248, 249, 250); position: relative; z-index: 2; display: fl=
+ex; justify-content: center; align-items: center; text-align: center; curso=
+r: pointer; user-select: none; transition: 0.2s ease-in-out; font-size: 10.=
+5px; padding: 2px; box-sizing: border-box; line-height: 1.15; }
+
+.materia:hover { transform: scale(1.05); border-color: rgb(52, 152, 219); }
+
+.materia.solicitada { background-color: rgb(231, 76, 60); color: white; bor=
+der-color: rgb(192, 57, 43); }
+
+.materia.cursando { background-color: rgb(241, 196, 15); color: rgb(51, 51,=
+ 51); border-color: rgb(243, 156, 18); }
+
+.materia.aprovada { background-color: rgb(46, 204, 113); color: white; bord=
+er-color: rgb(39, 174, 96); font-weight: 500; }
+
+#calc1 { grid-area: 3 / 1; }
+
+#quimica { grid-area: 5 / 1; }
+
+#algebra { grid-area: 6 / 1; }
+
+#prog-func { grid-area: 9 / 1; }
+
+#intro-ec { grid-area: 11 / 1; }
+
+#circuitos1 { grid-area: 2 / 2; }
+
+#calc2 { grid-area: 4 / 2; }
+
+#fund-mec { grid-area: 7 / 2; }
+
+#prog-est { grid-area: 9 / 2; }
+
+#praticas-lab { grid-area: 2 / 3; }
+
+#circuitos2 { grid-area: 3 / 3; }
+
+#calc3 { grid-area: 5 / 3; }
+
+#eletromag1 { grid-area: 6 / 3; }
+
+#fisica-exp { grid-area: 7 / 3; }
+
+#est-basica { grid-area: 8 / 3; }
+
+#ed1 { grid-area: 9 / 3; }
+
+#eq-dif { grid-area: 4 / 4; }
+
+#mec-solidos { grid-area: 5 / 4; }
+
+#eletromag2 { grid-area: 6 / 4; }
+
+#termo { grid-area: 8 / 4; }
+
+#mec-fluidos { grid-area: 9 / 4; }
+
+#ed2 { grid-area: 10 / 4; }
+
+#arq-comp { grid-area: 11 / 4; }
+
+#sinais { grid-area: 3 / 5; }
+
+#ele-basica1 { grid-area: 4 / 5; }
+
+#est-materia { grid-area: 5 / 5; }
+
+#alg-num { grid-area: 6 / 5; }
+
+#poo { grid-area: 10 / 5; }
+
+#instal-elet { grid-area: 2 / 6; }
+
+#analise-mod { grid-area: 3 / 6; }
+
+#ele-basica2 { grid-area: 4 / 6; }
+
+#ele-digital { grid-area: 5 / 6; }
+
+#ling-prog { grid-area: 10 / 6; }
+
+#sis-op { grid-area: 11 / 6; }
+
+#eng-soft { grid-area: 12 / 6; }
+
+#opt1 { grid-area: 2 / 7; }
+
+#sis-realim { grid-area: 3 / 7; }
+
+#lab-controle { grid-area: 4 / 7; }
+
+#sis-digitais { grid-area: 5 / 7; }
+
+#proc-est { grid-area: 7 / 7; }
+
+#comp-graf { grid-area: 9 / 7; }
+
+#ling-formais { grid-area: 10 / 7; }
+
+#teleproc { grid-area: 12 / 7; }
+
+#opt2 { grid-area: 2 / 8; }
+
+#economia { grid-area: 3 / 8; }
+
+#sis-embarcados { grid-area: 5 / 8; }
+
+#banco-dados { grid-area: 9 / 8; }
+
+#teoria-comp { grid-area: 10 / 8; }
+
+#compiladores { grid-area: 11 / 8; }
+
+#redes { grid-area: 12 / 8; }
+
+#opt3 { grid-area: 2 / 9; }
+
+#ciencias-hs { grid-area: 3 / 9; }
+
+#fund-amb { grid-area: 4 / 9; }
+
+#ger-proj { grid-area: 5 / 9; }
+
+#org-ind { grid-area: 6 / 9; }
+
+#asp-legais { grid-area: 7 / 9; }
+
+#proj-grad1 { grid-area: 9 / 9; }
+
+#aval-desemp { grid-area: 12 / 9; }
+
+#opt4 { grid-area: 2 / 10; }
+
+#estagio { grid-area: 3 / 10; }
+
+#proj-grad2 { grid-area: 9 / 10; }
+------MultipartBoundary--0s4drrtC86mDLZblD3tC1UYaQEW5O9YYTGO2pgrITr------
